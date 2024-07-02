@@ -2,6 +2,8 @@
 #include "NearbyProtocols/ConnectionAdvertisement.h"
 #include "NearbyProtocols/MediumAdvertisement.h"
 #include "NearbyProtocols/Pcp.h"
+#include "NearbyProtocols/ShareAdvertisement.h"
+#include "NearbyProtocols/ShareEnums.h"
 #include "NearbyProtocols/Socket.h"
 #include "NearbyTests/utils.h"
 #include "NearbyUtils/Buffer.h"
@@ -11,9 +13,10 @@ int main()
 {
     const char* test_medium_data_serialized = "J\027#V7PU\0212S\030\206\360\314\242\347\220x\337\350\303\277\036\330\rE\313";
 
-    struct nearby_medium_advertisement_ble advertisement_medium_deserialized = {};
-
+    struct nearby_medium_advertisement_ble     advertisement_medium_deserialized = {};
     struct nearby_connection_advertisement_ble advertisement_connection_deserialized = {};
+
+    struct nearby_share_advertisement advertisement_share_deserialized = {};
 
     {
         struct nearby_utils_buffer test_medium_data_buffer = {};
@@ -52,6 +55,33 @@ int main()
             printf("  Endpoint Info Size: %i\n", advertisement_connection_deserialized.endpoint_info_length);
             printf("  Endpoint Info:\n");
             print_bytes_as_hex(advertisement_connection_deserialized.endpoint_info_buffer, advertisement_connection_deserialized.endpoint_info_length, 3);
+            printf("  Endpoint Info (Share Connection Info Parsed):\n");
+
+            if (advertisement_connection_deserialized.endpoint_info_length > 0)
+            {
+                struct nearby_utils_buffer test_share_data_buffer = {};
+                nearby_utils_buffer_initialize(&test_share_data_buffer, advertisement_connection_deserialized.endpoint_info_buffer, advertisement_connection_deserialized.endpoint_info_length);
+
+                nearby_share_advertisement_from_endpoint_info(&advertisement_share_deserialized, &test_share_data_buffer);
+
+                printf("   Version: %s\n", nearby_share_advertisement_version_to_string(advertisement_share_deserialized.version));
+                printf("   Has Name: %i\n", advertisement_share_deserialized.has_name);
+                printf("   Device Type: %s\n", nearby_share_target_type_to_string(advertisement_share_deserialized.device_type));
+                printf("   Salt:\n");
+                print_bytes_as_hex(advertisement_share_deserialized.salt, sizeof(advertisement_share_deserialized.salt), 4);
+                printf("   Metadata Encryption Key Hash Byte:\n");
+                print_bytes_as_hex(advertisement_share_deserialized.metadata_encryption_key_hash_byte, sizeof(advertisement_share_deserialized.metadata_encryption_key_hash_byte), 4);
+            
+                if(advertisement_share_deserialized.has_name == false)
+                {
+                    printf("   No name.\n");
+                }
+                else
+                {
+                    printf("   Name: %s\n", advertisement_share_deserialized.name_data);
+                }
+            }
+
             printf("  Bluetooth Mac Address:\n");
             print_bytes_as_hex(advertisement_connection_deserialized.bluetooth_mac_address, sizeof(advertisement_connection_deserialized.bluetooth_mac_address), 3);
             printf("  UWB Address:\n");
@@ -101,6 +131,7 @@ int main()
         free(serialized_medium_data);
     }
 
+    nearby_share_advertisement_from_endpoint_info_cleanup(&advertisement_share_deserialized);
     nearby_connection_advertisement_ble_deserialize_cleanup(&advertisement_connection_deserialized);
     nearby_medium_advertisement_ble_deserialize_cleanup(&advertisement_medium_deserialized);
 
