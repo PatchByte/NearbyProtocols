@@ -32,8 +32,8 @@ struct nearby_medium_advertisement_ble
 const char* nearby_medium_advertisement_ble_version_to_string(enum nearby_medium_advertisement_ble_version version);
 
 size_t nearby_medium_advertisement_ble_serialize_get_required_data_length(struct nearby_medium_advertisement_ble* advertisement);
-void nearby_medium_advertisement_serialize(struct nearby_medium_advertisement_ble* advertisement, struct nearby_utils_buffer* buffer);
-bool nearby_medium_advertisement_ble_deserialize(struct nearby_medium_advertisement_ble* advertisement, struct nearby_utils_buffer* buffer);
-void nearby_medium_advertisement_ble_deserialize_cleanup(struct nearby_medium_advertisement_ble* advertisement);
+void   nearby_medium_advertisement_serialize(struct nearby_medium_advertisement_ble* advertisement, struct nearby_utils_buffer* buffer);
+bool   nearby_medium_advertisement_ble_deserialize(struct nearby_medium_advertisement_ble* advertisement, struct nearby_utils_buffer* buffer);
+void   nearby_medium_advertisement_ble_deserialize_cleanup(struct nearby_medium_advertisement_ble* advertisement);
 
 #endif // !NEARBYPROTOCOLS_ADVERTISEMENT_H

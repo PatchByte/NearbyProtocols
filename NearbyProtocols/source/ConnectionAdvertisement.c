@@ -1,5 +1,6 @@
 #include "NearbyProtocols/ConnectionAdvertisement.h"
 #include "NearbyUtils/Buffer.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 #define NEARBY_CONNECTION_ADVERTISEMENT_VERSION_BITMASK 0xE0

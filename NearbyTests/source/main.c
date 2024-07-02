@@ -56,6 +56,7 @@ int main()
             print_bytes_as_hex(advertisement_connection_deserialized.bluetooth_mac_address, sizeof(advertisement_connection_deserialized.bluetooth_mac_address), 3);
             printf("  UWB Address:\n");
             print_bytes_as_hex(advertisement_connection_deserialized.uwb_address_buffer, advertisement_connection_deserialized.uwb_address_length, 3);
+            printf("  Extra Field: %i\n", advertisement_connection_deserialized.extra_field);
         }
 
         if (advertisement_medium_deserialized.is_device_token_present == true)
