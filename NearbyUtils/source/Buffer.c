@@ -40,6 +40,36 @@ bool nearby_utils_buffer_read_bytes(struct nearby_utils_buffer* buffer_reader, v
     return true;
 }
 
+bool nearby_utils_buffer_write_bytes(struct nearby_utils_buffer* buffer_reader, void* buffer_data, unsigned long long buffer_size)
+{
+    if (buffer_reader->buffer_left_bytes <= 0)
+    {
+        buffer_reader->has_error_occurred = true;
+        buffer_reader->error_message = "Reached end of buffer.";
+
+        return false;
+    }
+
+    if (buffer_reader->buffer_left_bytes < (long long)buffer_size)
+    {
+        buffer_reader->has_error_occurred = true;
+        buffer_reader->error_message = "Not enough bytes left to write.";
+
+        return false;
+    }
+
+    buffer_reader->buffer_left_bytes -= (long long)buffer_size;
+
+    for (unsigned long long i = 0; i < buffer_size; i++)
+    {
+        *((unsigned char*)buffer_reader->buffer_data + buffer_reader->buffer_index + i) = *((unsigned char*)buffer_data + i);
+    }
+
+    buffer_reader->buffer_index += buffer_size;
+
+    return true;
+}
+
 // unsigned read
 
 unsigned char nearby_utils_buffer_read_u8(struct nearby_utils_buffer* buffer_reader)
@@ -70,6 +100,28 @@ unsigned long long nearby_utils_buffer_read_u64(struct nearby_utils_buffer* buff
     return value;
 }
 
+// unsigned write
+
+void nearby_utils_buffer_write_u8(struct nearby_utils_buffer* buffer_reader, unsigned char value)
+{
+    nearby_utils_buffer_write_bytes(buffer_reader, &value, sizeof(value));
+}
+
+void nearby_utils_buffer_write_u16(struct nearby_utils_buffer* buffer_reader, unsigned short value)
+{
+    nearby_utils_buffer_write_bytes(buffer_reader, &value, sizeof(value));
+}
+
+void nearby_utils_buffer_write_u32(struct nearby_utils_buffer* buffer_reader, unsigned int value)
+{
+    nearby_utils_buffer_write_bytes(buffer_reader, &value, sizeof(value));
+}
+
+void nearby_utils_buffer_write_u64(struct nearby_utils_buffer* buffer_reader, unsigned long long value)
+{
+    nearby_utils_buffer_write_bytes(buffer_reader, &value, sizeof(value));
+}
+
 // signed read
 
 signed char nearby_utils_buffer_read_s8(struct nearby_utils_buffer* buffer_reader)
@@ -98,4 +150,26 @@ signed long long nearby_utils_buffer_read_s64(struct nearby_utils_buffer* buffer
     signed long long value = 0;
     nearby_utils_buffer_read_bytes(buffer_reader, &value, sizeof(value));
     return value;
+}
+
+// signed write
+
+void nearby_utils_buffer_write_s8(struct nearby_utils_buffer* buffer_reader, signed char value)
+{
+    nearby_utils_buffer_write_bytes(buffer_reader, &value, sizeof(value));
+}
+
+void nearby_utils_buffer_write_s16(struct nearby_utils_buffer* buffer_reader, signed short value)
+{
+    nearby_utils_buffer_write_bytes(buffer_reader, &value, sizeof(value));
+}
+
+void nearby_utils_buffer_write_s32(struct nearby_utils_buffer* buffer_reader, signed int value)
+{
+    nearby_utils_buffer_write_bytes(buffer_reader, &value, sizeof(value));
+}
+
+void nearby_utils_buffer_write_s64(struct nearby_utils_buffer* buffer_reader, signed long long value)
+{
+    nearby_utils_buffer_write_bytes(buffer_reader, &value, sizeof(value));
 }
