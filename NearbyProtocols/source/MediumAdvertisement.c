@@ -130,7 +130,7 @@ bool nearby_medium_advertisement_ble_deserialize(struct nearby_medium_advertisem
         return true;
     }
 
-    if (buffer->buffer_left_bytes >= sizeof(advertisement->extra_field))
+    if (buffer->buffer_left_bytes >= (long long)sizeof(advertisement->extra_field))
     {
         advertisement->is_extra_field_present = true;
         advertisement->extra_field = nearby_utils_buffer_read_u8(buffer);

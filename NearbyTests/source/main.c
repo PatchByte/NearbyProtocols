@@ -14,7 +14,7 @@ int main()
     {
         struct nearby_utils_buffer test_data_buffer = {};
 
-        nearby_utils_buffer_initialize(&test_data_buffer, (void*)test_data_serialized, 28);
+        nearby_utils_buffer_initialize(&test_data_buffer, (void*)test_data_serialized, 27);
 
         if (nearby_medium_advertisement_ble_deserialize(&advertisement_deserialized, &test_data_buffer) == false)
         {
@@ -44,7 +44,7 @@ int main()
 
         printf(" Re-Serialized size required: %li\n", nearby_medium_advertisement_ble_serialize_get_required_data_length(&advertisement_deserialized));
 
-        if (nearby_medium_advertisement_ble_serialize_get_required_data_length(&advertisement_deserialized) != 28)
+        if (nearby_medium_advertisement_ble_serialize_get_required_data_length(&advertisement_deserialized) != 27)
         {
             printf("! Encountered non matching size.\n");
             return -1;
@@ -64,6 +64,12 @@ int main()
         printf(" Data Size: %li\n", serialized_data_length);
         printf(" Data:\n");
         print_bytes_as_hex(serialized_data, serialized_data_length, 2);
+
+        if(memcmp(serialized_data, test_data_serialized, serialized_data_length) != 0)
+        {
+            printf("! Serialized output does not match.\n");
+            return -1;
+        }
 
         free(serialized_data);
     }
