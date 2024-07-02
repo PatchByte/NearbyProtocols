@@ -36,6 +36,4 @@ void nearby_medium_advertisement_serialize(struct nearby_medium_advertisement_bl
 bool nearby_medium_advertisement_ble_deserialize(struct nearby_medium_advertisement_ble* advertisement, struct nearby_utils_buffer* buffer);
 void nearby_medium_advertisement_ble_deserialize_cleanup(struct nearby_medium_advertisement_ble* advertisement);
 
-bool nearby_medium_advertisement_ble_is_valid(struct nearby_medium_advertisement_ble* advertisement);
-
 #endif // !NEARBYPROTOCOLS_ADVERTISEMENT_H
