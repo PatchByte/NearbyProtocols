@@ -9,7 +9,7 @@
 #define NEARBY_MEDIUM_ADVERTISEMENT_SOCKET_VERSION_BITMASK 0x1C
 #define NEARBY_MEDIUM_ADVERTISEMENT_FAST_ADVERTISEMENT_FLAG_BITMASK 0x02
 
-const char* nearby_medium_advertisement_version_to_string(enum nearby_medium_advertisement_version version)
+const char* nearby_medium_advertisement_ble_version_to_string(enum nearby_medium_advertisement_ble_version version)
 {
     switch (version)
     {
@@ -22,7 +22,7 @@ const char* nearby_medium_advertisement_version_to_string(enum nearby_medium_adv
     }
 }
 
-size_t nearby_medium_advertisement_serialize_get_required_data_length(struct nearby_medium_advertisement* advertisement)
+size_t nearby_medium_advertisement_ble_serialize_get_required_data_length(struct nearby_medium_advertisement_ble* advertisement)
 {
     size_t required_data_length = 0;
 
@@ -44,7 +44,7 @@ size_t nearby_medium_advertisement_serialize_get_required_data_length(struct nea
     return required_data_length;
 }
 
-bool nearby_medium_advertisement_deserialize(struct nearby_medium_advertisement* advertisement, struct nearby_utils_buffer* buffer)
+bool nearby_medium_advertisement_ble_deserialize(struct nearby_medium_advertisement_ble* advertisement, struct nearby_utils_buffer* buffer)
 {
     unsigned char version_byte = nearby_utils_buffer_read_u8(buffer);
 
@@ -86,7 +86,7 @@ bool nearby_medium_advertisement_deserialize(struct nearby_medium_advertisement*
     return true;
 }
 
-void nearby_medium_advertisement_deserialize_cleanup(struct nearby_medium_advertisement* advertisement)
+void nearby_medium_advertisement_ble_deserialize_cleanup(struct nearby_medium_advertisement_ble* advertisement)
 {
     if (advertisement->data)
     {
