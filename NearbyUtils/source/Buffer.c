@@ -10,6 +10,30 @@ void nearby_utils_buffer_initialize(struct nearby_utils_buffer* buffer_reader, v
     buffer_reader->has_error_occurred = false;
 }
 
+bool nearby_utils_buffer_skip_bytes(struct nearby_utils_buffer* buffer_reader, unsigned long long buffer_size)
+{
+    if (buffer_reader->buffer_left_bytes <= 0)
+    {
+        buffer_reader->has_error_occurred = true;
+        buffer_reader->error_message = "Reached end of buffer, can not skip.";
+
+        return false;
+    }
+
+    if (buffer_reader->buffer_left_bytes < (long long)buffer_size)
+    {
+        buffer_reader->has_error_occurred = true;
+        buffer_reader->error_message = "Not enough bytes left to read, can not skip.";
+
+        return false;
+    }
+
+    buffer_reader->buffer_left_bytes -= (long long)buffer_size;
+    buffer_reader->buffer_index += buffer_size;
+
+    return true;
+}
+
 bool nearby_utils_buffer_read_bytes(struct nearby_utils_buffer* buffer_reader, void* buffer_data, unsigned long long buffer_size)
 {
     if (buffer_reader->buffer_left_bytes <= 0)

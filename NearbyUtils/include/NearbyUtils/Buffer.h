@@ -15,6 +15,8 @@ struct nearby_utils_buffer
 
 void nearby_utils_buffer_initialize(struct nearby_utils_buffer* buffer_reader, void* buffer_data, unsigned long long buffer_size);
 
+bool nearby_utils_buffer_skip_bytes(struct nearby_utils_buffer* buffer_reader, unsigned long long buffer_size);
+
 bool nearby_utils_buffer_read_bytes(struct nearby_utils_buffer* buffer_reader, void* buffer_data, unsigned long long buffer_size);
 bool nearby_utils_buffer_write_bytes(struct nearby_utils_buffer* buffer_reader, void* buffer_data, unsigned long long buffer_size);
 
