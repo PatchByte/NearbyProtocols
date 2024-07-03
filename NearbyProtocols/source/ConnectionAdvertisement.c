@@ -64,7 +64,7 @@ void nearby_connection_advertisement_ble_deserialize(struct nearby_connection_ad
             advertisement->uwb_address_buffer = NULL;
         }
 
-        if(buffer->buffer_left_bytes >= 1)
+        if (buffer->buffer_left_bytes >= 1)
         {
             advertisement->extra_field = nearby_utils_buffer_read_u8(buffer);
         }

@@ -1,4 +1,4 @@
-project("NearbyProtocols")
+project("NearbyProtocols" C)
 
 file(GLOB NEARBYPROTOCOLS_SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/source/*.c

@@ -1,4 +1,4 @@
-#include "NearbyTests/utils.h"
+#include "NearbyTests/Utils.hpp"
 #include <stdio.h>
 
 void print_bytes_as_hex(void* data, size_t length, int indent)

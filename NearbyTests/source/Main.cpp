@@ -1,17 +1,17 @@
-#include "NearbyTests/main.h"
+#include "NearbyTests/Main.hpp"
+#include "NearbyTests/Utils.hpp"
 #include "NearbyProtocols/ConnectionAdvertisement.h"
 #include "NearbyProtocols/MediumAdvertisement.h"
 #include "NearbyProtocols/Pcp.h"
 #include "NearbyProtocols/ShareAdvertisement.h"
 #include "NearbyProtocols/ShareEnums.h"
 #include "NearbyProtocols/Socket.h"
-#include "NearbyTests/utils.h"
 #include "NearbyUtils/Buffer.h"
 #include <stdio.h>
 
 int main()
 {
-    const char* test_medium_data_serialized = "J\027#V7PU\0212S\030\206\360\314\242\347\220x\337\350\303\277\036\330\rE\313";
+    const char* test_medium_data_serialized = "J\027#96BK\021\0264\234pGh\324\315\342^\2513t\177\234\350\325\023\315";
 
     struct nearby_medium_advertisement_ble     advertisement_medium_deserialized = {};
     struct nearby_connection_advertisement_ble advertisement_connection_deserialized = {};
@@ -110,7 +110,7 @@ int main()
 
     {
         size_t         serialized_medium_data_length = nearby_medium_advertisement_ble_serialize_get_required_data_length(&advertisement_medium_deserialized);
-        unsigned char* serialized_medium_data = malloc(serialized_medium_data_length);
+        unsigned char* serialized_medium_data = (unsigned char*) malloc(serialized_medium_data_length);
 
         struct nearby_utils_buffer serialized_medium_data_buffer = {};
 
