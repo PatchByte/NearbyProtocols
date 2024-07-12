@@ -1,12 +1,13 @@
 #include "NearbyTests/Main.hpp"
-#include "NearbyTests/Utils.hpp"
 #include "NearbyProtocols/ConnectionAdvertisement.h"
 #include "NearbyProtocols/MediumAdvertisement.h"
 #include "NearbyProtocols/Pcp.h"
 #include "NearbyProtocols/ShareAdvertisement.h"
 #include "NearbyProtocols/ShareEnums.h"
 #include "NearbyProtocols/Socket.h"
+#include "NearbyTests/Utils.hpp"
 #include "NearbyUtils/Buffer.h"
+#include <cstdio>
 #include <stdio.h>
 
 int main()
@@ -71,14 +72,39 @@ int main()
                 print_bytes_as_hex(advertisement_share_deserialized.salt, sizeof(advertisement_share_deserialized.salt), 4);
                 printf("   Metadata Encryption Key Hash Byte:\n");
                 print_bytes_as_hex(advertisement_share_deserialized.metadata_encryption_key_hash_byte, sizeof(advertisement_share_deserialized.metadata_encryption_key_hash_byte), 4);
-            
-                if(advertisement_share_deserialized.has_name == false)
+
+                if (advertisement_share_deserialized.has_name == false)
                 {
                     printf("   No name.\n");
                 }
                 else
                 {
                     printf("   Name: %s\n", advertisement_share_deserialized.name_data);
+                }
+
+                {
+                    size_t endpoint_info_reserialized_required_data_length = nearby_share_advertisement_to_endpoint_info_get_required_data_length(&advertisement_share_deserialized);
+
+                    if (endpoint_info_reserialized_required_data_length != advertisement_connection_deserialized.endpoint_info_length)
+                    {
+                        printf("  [!] Failure to re-serialize length!\n");
+                        return -1;
+                    }
+
+                    unsigned char* endpoint_info_reserialized_data = static_cast<unsigned char*>(malloc(endpoint_info_reserialized_required_data_length));
+
+                    nearby_utils_buffer endpoint_info_reserialized_buffer = {};
+                    nearby_utils_buffer_initialize(&endpoint_info_reserialized_buffer, endpoint_info_reserialized_data, endpoint_info_reserialized_required_data_length);
+
+                    nearby_share_advertisement_to_endpoint_info(&advertisement_share_deserialized, &endpoint_info_reserialized_buffer);
+
+                    if (memcmp(endpoint_info_reserialized_data, advertisement_connection_deserialized.endpoint_info_buffer, advertisement_connection_deserialized.endpoint_info_length) != 0)
+                    {
+                        printf("  [!] Failure to re-serialize data!\n");
+                        return -1;
+                    }
+
+                    free(endpoint_info_reserialized_data);
                 }
             }
 
@@ -87,6 +113,38 @@ int main()
             printf("  UWB Address:\n");
             print_bytes_as_hex(advertisement_connection_deserialized.uwb_address_buffer, advertisement_connection_deserialized.uwb_address_length, 3);
             printf("  Extra Field: %i\n", advertisement_connection_deserialized.extra_field);
+
+            {
+                size_t advertisement_connection_reserialized_size =
+                    nearby_connection_advertisement_ble_serialize_get_required_data_length(&advertisement_connection_deserialized, advertisement_medium_deserialized.is_fast_advertisement);
+
+                if (advertisement_connection_reserialized_size != advertisement_medium_deserialized.data_size)
+                {
+                    printf("  [!] Failure to re-serialize length!\n");
+                    return -1;
+                }
+
+                unsigned char* advertisement_connection_reserialized_data = static_cast<unsigned char*>(malloc(advertisement_connection_reserialized_size));
+
+                nearby_utils_buffer advertisement_connection_reserialized_buffer = {};
+                nearby_utils_buffer_initialize(&advertisement_connection_reserialized_buffer, advertisement_connection_reserialized_data, advertisement_connection_reserialized_size);
+
+                nearby_connection_advertisement_ble_serialize(&advertisement_connection_deserialized, &advertisement_connection_reserialized_buffer,
+                                                              advertisement_medium_deserialized.is_fast_advertisement);
+
+                if (memcmp(advertisement_connection_reserialized_data, advertisement_medium_deserialized.data, advertisement_medium_deserialized.data_size) != 0)
+                {
+                    printf("  [!] Failure to re-serialize data.\n");
+                    return -1;
+                }
+                else
+                {
+                    printf(" Test Connection Advertisement Packet Parsed and Re-Serialized: \n");
+                    print_bytes_as_hex(advertisement_connection_reserialized_data, advertisement_connection_reserialized_size, 2);
+                }
+
+                free(advertisement_connection_reserialized_data);
+            }
         }
 
         if (advertisement_medium_deserialized.is_device_token_present == true)
@@ -99,25 +157,27 @@ int main()
             printf(" No Device Token.\n");
         }
 
-        printf(" Re-Serialized size required: %li\n", nearby_medium_advertisement_ble_serialize_get_required_data_length(&advertisement_medium_deserialized));
-
-        if (nearby_medium_advertisement_ble_serialize_get_required_data_length(&advertisement_medium_deserialized) != 27)
         {
-            printf("! Encountered non matching size.\n");
-            return -1;
+            printf(" Re-Serialized size required: %li\n", nearby_medium_advertisement_ble_serialize_get_required_data_length(&advertisement_medium_deserialized));
+
+            if (nearby_medium_advertisement_ble_serialize_get_required_data_length(&advertisement_medium_deserialized) != 27)
+            {
+                printf("! Encountered non matching size.\n");
+                return -1;
+            }
         }
     }
 
     {
         size_t         serialized_medium_data_length = nearby_medium_advertisement_ble_serialize_get_required_data_length(&advertisement_medium_deserialized);
-        unsigned char* serialized_medium_data = (unsigned char*) malloc(serialized_medium_data_length);
+        unsigned char* serialized_medium_data = (unsigned char*)malloc(serialized_medium_data_length);
 
         struct nearby_utils_buffer serialized_medium_data_buffer = {};
 
         nearby_utils_buffer_initialize(&serialized_medium_data_buffer, serialized_medium_data, serialized_medium_data_length);
         nearby_medium_advertisement_serialize(&advertisement_medium_deserialized, &serialized_medium_data_buffer);
 
-        printf("Test Advertisement Packet Parsed and Re-Serialized:\n");
+        printf("Test Medium Advertisement Packet Parsed and Re-Serialized:\n");
         printf(" Data Size: %li\n", serialized_medium_data_length);
         printf(" Data:\n");
         print_bytes_as_hex(serialized_medium_data, serialized_medium_data_length, 2);
