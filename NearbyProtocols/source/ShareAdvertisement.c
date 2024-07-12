@@ -1,7 +1,7 @@
 #include "NearbyProtocols/ShareAdvertisement.h"
 #include "NearbyUtils/Buffer.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define NEARBY_SHARE_ADVERTISEMENT_VERSION_BITMASK 0b111
 #define NEARBY_SHARE_ADVERTISEMENT_VISIBLITY_BITMASK 0b1
@@ -34,6 +34,48 @@ const char* nearby_share_blocked_vendor_id_to_string(enum nearby_share_blocked_v
     }
 }
 
+size_t nearby_share_advertisement_to_endpoint_info_get_required_data_length(struct nearby_share_advertisement* advertisement)
+{
+    size_t required_data_length = 0;
+
+    // Version & IsVisible & DeviceType
+    required_data_length += 1;
+
+    required_data_length += sizeof(advertisement->salt);
+    required_data_length += sizeof(advertisement->metadata_encryption_key_hash_byte);
+
+    if (advertisement->has_name)
+    {
+        // Name-Length
+        required_data_length += 1;
+        required_data_length += advertisement->name_length;
+    }
+
+    // Skip TLV's
+
+    return required_data_length;
+}   
+
+void nearby_share_advertisement_to_endpoint_info(struct nearby_share_advertisement* advertisement, struct nearby_utils_buffer* buffer)
+{
+    unsigned char first_byte = 0;
+
+    first_byte |= (advertisement->version & NEARBY_SHARE_ADVERTISEMENT_VERSION_BITMASK) << 5;
+    first_byte |= (advertisement->is_visible == true ? 0 : 1) << 4;
+    first_byte |= (advertisement->device_type & NEARBY_SHARE_ADVERTISEMENT_DEVICE_TYPE_BITMASK) << 1;
+
+    nearby_utils_buffer_write_u8(buffer, first_byte);
+
+    nearby_utils_buffer_write_bytes(buffer, advertisement->salt, sizeof(advertisement->salt));
+    nearby_utils_buffer_write_bytes(buffer, advertisement->metadata_encryption_key_hash_byte, sizeof(advertisement->metadata_encryption_key_hash_byte));
+
+    if (advertisement->has_name == true)
+    {
+        nearby_utils_buffer_write_u8(buffer, advertisement->name_length);
+        nearby_utils_buffer_write_bytes(buffer, advertisement->name_data, advertisement->name_length);
+    }
+}
+
 bool nearby_share_advertisement_from_endpoint_info(struct nearby_share_advertisement* advertisement, struct nearby_utils_buffer* buffer)
 {
     unsigned char first_byte = nearby_utils_buffer_read_u8(buffer);
@@ -43,7 +85,6 @@ bool nearby_share_advertisement_from_endpoint_info(struct nearby_share_advertise
     advertisement->device_type = ((first_byte >> 1) & NEARBY_SHARE_ADVERTISEMENT_DEVICE_TYPE_BITMASK);
 
     nearby_utils_buffer_read_bytes(buffer, advertisement->salt, sizeof(advertisement->salt));
-
     nearby_utils_buffer_read_bytes(buffer, advertisement->metadata_encryption_key_hash_byte, sizeof(advertisement->metadata_encryption_key_hash_byte));
 
     if (advertisement->has_name == true)

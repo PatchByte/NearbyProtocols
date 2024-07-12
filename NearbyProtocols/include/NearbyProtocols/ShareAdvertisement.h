@@ -3,6 +3,7 @@
 
 #include "NearbyProtocols/ShareEnums.h"
 #include "NearbyUtils/Buffer.h"
+#include <stdio.h>
 
 #define NEARBY_SHARE_ADVERTISEMENT_SALT_SIZE 2
 #define NEARBY_SHARE_ADVERTISEMENT_METADATA_ENCRYTION_KEY_HASH_BYTE_SIZE 14
@@ -55,8 +56,10 @@ extern "C"
     const char* nearby_share_advertisement_version_to_string(enum nearby_share_advertisement_version version);
     const char* nearby_share_blocked_vendor_id_to_string(enum nearby_share_blocked_vendor_id vendor_id);
 
-    bool nearby_share_advertisement_from_endpoint_info(struct nearby_share_advertisement* advertisement, struct nearby_utils_buffer* buffer);
-    void nearby_share_advertisement_from_endpoint_info_cleanup(struct nearby_share_advertisement* advertisement);
+    size_t nearby_share_advertisement_to_endpoint_info_get_required_data_length(struct nearby_share_advertisement* advertisement);
+    void   nearby_share_advertisement_to_endpoint_info(struct nearby_share_advertisement* advertisement, struct nearby_utils_buffer* buffer);
+    bool   nearby_share_advertisement_from_endpoint_info(struct nearby_share_advertisement* advertisement, struct nearby_utils_buffer* buffer);
+    void   nearby_share_advertisement_from_endpoint_info_cleanup(struct nearby_share_advertisement* advertisement);
 
 #ifdef __cplusplus
 }
