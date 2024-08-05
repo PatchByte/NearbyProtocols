@@ -54,7 +54,7 @@ size_t nearby_share_advertisement_to_endpoint_info_get_required_data_length(stru
     // Skip TLV's
 
     return required_data_length;
-}   
+}
 
 void nearby_share_advertisement_to_endpoint_info(struct nearby_share_advertisement* advertisement, struct nearby_utils_buffer* buffer)
 {
@@ -136,6 +136,8 @@ bool nearby_share_advertisement_from_endpoint_info(struct nearby_share_advertise
         }
         }
     }
+
+    return true;
 }
 
 void nearby_share_advertisement_from_endpoint_info_cleanup(struct nearby_share_advertisement* advertisement)
