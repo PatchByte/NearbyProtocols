@@ -13,12 +13,12 @@ const char* nearby_medium_advertisement_ble_version_to_string(enum nearby_medium
 {
     switch (version)
     {
-    case nearby_advertisement_version_undefined:
-        return "undefined";
     case nearby_advertisement_version_v1:
         return "v1";
     case nearby_advertisement_version_v2:
         return "v2";
+    default:
+        return "undefined";
     }
 }
 

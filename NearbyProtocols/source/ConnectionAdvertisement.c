@@ -15,7 +15,7 @@ const char* nearby_connection_advertisement_ble_version_to_string(enum nearby_co
     case nearby_connection_advertisement_ble_version_v1:
         return "v1";
     default:
-        "unknown";
+        return "unknown";
     }
 }
 
@@ -158,7 +158,7 @@ void nearby_connection_advertisement_ble_deserialize(struct nearby_connection_ad
 }
 
 void nearby_connection_advertisement_ble_deserialize_cleanup(struct nearby_connection_advertisement_ble* advertisement)
-{   
+{
     if (advertisement->endpoint_info_buffer)
     {
         free(advertisement->endpoint_info_buffer);
